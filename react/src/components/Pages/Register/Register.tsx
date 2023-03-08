@@ -1,4 +1,14 @@
+import axios from "axios";
+
 function Register() {
+  const onSignUp = async () => {
+    const res = await axios({
+      method: "get",
+      url: "http://localhost:8080/hello",
+    });
+    console.log(res);
+  };
+
   return (
     <div className="auth-page">
       <div className="container page">
@@ -35,7 +45,11 @@ function Register() {
                   placeholder="Password"
                 />
               </fieldset>
-              <button className="btn btn-lg btn-primary pull-xs-right">
+              <button
+                type="button"
+                className="btn btn-lg btn-primary pull-xs-right"
+                onClick={onSignUp}
+              >
                 Sign up
               </button>
             </form>

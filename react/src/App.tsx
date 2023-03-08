@@ -13,17 +13,9 @@ function App() {
       <Header />
       <Routes>
         <Route path="/login" element={<Login />} />
-      </Routes>
-      <Routes>
         <Route path="/register" element={<Register />} />
-      </Routes>
-      <Routes>
         <Route path="/settings" element={<Settings />} />
-      </Routes>
-      <Routes>
         <Route path="/editor" element={<NewArticle />} />
-      </Routes>
-      <Routes>
         <Route path="/" element={<Home />} />
       </Routes>
       <Footer />
