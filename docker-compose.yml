@@ -12,7 +12,8 @@ services:
     volumes:
       - ./golang:/go/src
     environment:
-      - TZ=Asia/Tokyo
+      TZ: Asia/Tokyo
+      FRONTEND_URL: http://localhost:5173
     depends_on:
       - db
   db:
@@ -33,6 +34,8 @@ services:
     stdin_open: true
     tty: true
     command: npm run dev
+    environment:
+      VITE_BACKEND_URL: http://localhost:8080
     volumes:
       - ./react:/app
     ports:
