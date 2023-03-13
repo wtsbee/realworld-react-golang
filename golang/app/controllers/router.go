@@ -2,9 +2,11 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"mypackage/app/models"
+	"mypackage/crypto"
 	"mypackage/database"
 	"net/http"
 
@@ -44,7 +46,16 @@ func userRegistration(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u := models.User{Email: params.User.Email, Username: params.User.Username, Password: params.User.Password}
+	encryptPw, err := crypto.PasswordEncrypt(params.User.Password)
+	if err != nil {
+		fmt.Println(err)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("{\"message\": \"パスワードの暗号化に失敗しました。\"}"))
+		return
+	}
+
+	u := models.User{Email: params.User.Email, Username: params.User.Username, Password: encryptPw}
 	db := database.DbConnect()
 	result := db.Create(&u)
 	if result.Error != nil {
@@ -58,7 +69,7 @@ func userRegistration(w http.ResponseWriter, r *http.Request) {
 	user := models.User{
 		Email:    params.User.Email,
 		Username: params.User.Username,
-		Password: params.User.Password,
+		Password: encryptPw,
 	}
 
 	resData := M{"user": user}
@@ -66,7 +77,7 @@ func userRegistration(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	_, err := w.Write(jsonBytes)
+	_, err = w.Write(jsonBytes)
 	if err == nil {
 		log.Println(err)
 	}
