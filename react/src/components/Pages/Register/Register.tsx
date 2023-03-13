@@ -1,12 +1,28 @@
 import axios from "axios";
+import { useState } from "react";
 
 function Register() {
+  const [input, setInput] = useState({ username: "", email: "", password: "" });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setInput({ ...input, [name]: value });
+  };
+
   const onSignUp = async () => {
+    const params = {
+      user: {
+        username: input.username,
+        email: input.email,
+        password: input.password,
+      },
+    };
     const res = await axios({
-      method: "get",
-      url: "http://localhost:8080/hello",
+      method: "post",
+      url: `${import.meta.env.VITE_BACKEND_URL}/api/users`,
+      data: params,
     });
-    console.log(res);
+    console.log(res.data);
   };
 
   return (
@@ -29,6 +45,9 @@ function Register() {
                   className="form-control form-control-lg"
                   type="text"
                   placeholder="Username"
+                  name="username"
+                  value={input.username}
+                  onChange={handleChange}
                 />
               </fieldset>
               <fieldset className="form-group">
@@ -36,6 +55,8 @@ function Register() {
                   className="form-control form-control-lg"
                   type="text"
                   placeholder="Email"
+                  name="email"
+                  onChange={handleChange}
                 />
               </fieldset>
               <fieldset className="form-group">
@@ -43,6 +64,8 @@ function Register() {
                   className="form-control form-control-lg"
                   type="password"
                   placeholder="Password"
+                  name="password"
+                  onChange={handleChange}
                 />
               </fieldset>
               <button

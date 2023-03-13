@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"mypackage/database"
 	"net/http"
 	"os"
 
@@ -8,8 +9,13 @@ import (
 )
 
 func StartMainServer() {
+	db := database.DbConnect()
+	// db.Migrator().DropTable(&models.User{})
+	database.Migrate(db)
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("/hello", hello)
+	mux.HandleFunc("/api/users", userRegistration)
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{os.Getenv("FRONTEND_URL")},
