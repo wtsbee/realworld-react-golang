@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Register() {
   const [input, setInput] = useState({ username: "", email: "", password: "" });
@@ -9,6 +10,8 @@ function Register() {
     setInput({ ...input, [name]: value });
   };
 
+  const navigate = useNavigate();
+
   const onSignUp = async () => {
     const params = {
       user: {
@@ -17,12 +20,18 @@ function Register() {
         password: input.password,
       },
     };
-    const res = await axios({
-      method: "post",
-      url: `${import.meta.env.VITE_BACKEND_URL}/api/users`,
-      data: params,
-    });
-    console.log(res.data);
+    try {
+      const res = await axios({
+        method: "post",
+        url: `${import.meta.env.VITE_BACKEND_URL}/api/users`,
+        data: params,
+      });
+      localStorage.setItem("jwt", res.data.user.token);
+      navigate("/");
+      console.log(res.data);
+    } catch (e) {
+      alert(e);
+    }
   };
 
   return (
