@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"mypackage/app/models"
@@ -17,20 +16,20 @@ import (
 // M is a generic map
 type M map[string]interface{}
 
-type Input struct {
-	User struct {
-		Email    string `json:"email" validate:"required,email"`
-		Username string `json:"username" validate:"required,min=2"`
-		Password string `json:"password" validate:"required,min=5,max=255"`
-	} `json:"user" validate:"required"`
-}
-
 func hello(w http.ResponseWriter, r *http.Request) {
 	log.Println("hello")
 	io.WriteString(w, "Hello-2\n")
 }
 
 func userRegistration(w http.ResponseWriter, r *http.Request) {
+	type Input struct {
+		User struct {
+			Email    string `json:"email" validate:"required,email"`
+			Username string `json:"username" validate:"required,min=2"`
+			Password string `json:"password" validate:"required,min=5,max=255"`
+		} `json:"user" validate:"required"`
+	}
+
 	params := Input{}
 
 	json.NewDecoder(r.Body).Decode(&params)
@@ -49,7 +48,7 @@ func userRegistration(w http.ResponseWriter, r *http.Request) {
 
 	encryptPw, err := crypto.PasswordEncrypt(params.User.Password)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("{\"message\": \"パスワードの暗号化に失敗しました。\"}"))
@@ -81,7 +80,51 @@ func userRegistration(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	_, err = w.Write(jsonBytes)
-	if err == nil {
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+func login(w http.ResponseWriter, r *http.Request) {
+	type Input struct {
+		User struct {
+			Email    string `json:"email"`
+			Password string `json:"password"`
+		} `json:"user"`
+	}
+
+	params := Input{}
+	json.NewDecoder(r.Body).Decode(&params)
+
+	u := models.User{}
+	db := database.DbConnect()
+	if err := db.Where("email = ?", params.User.Email).First(&u).Error; err != nil {
+		log.Println("emailが一致するユーザーが見つかりませんでした。:", err)
+	}
+
+	if err := crypto.CompareHashAndPassword(u.Password, params.User.Password); err != nil {
+		log.Println(err)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("{\"message\": \"パスワードが一致しませんでした。\"}"))
+		return
+	}
+
+	token := common.GenerateUserToken(&u)
+
+	user := models.User{
+		Email:    u.Email,
+		Username: u.Username,
+		Token:    token,
+	}
+
+	resData := M{"user": user}
+	jsonBytes, _ := json.Marshal(resData)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, err := w.Write(jsonBytes)
+	if err != nil {
 		log.Println(err)
 	}
 }
