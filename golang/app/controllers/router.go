@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"mypackage/app/models"
+	"mypackage/common"
 	"mypackage/crypto"
 	"mypackage/database"
 	"net/http"
@@ -66,10 +67,12 @@ func userRegistration(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	token := common.GenerateUserToken(&u)
+
 	user := models.User{
 		Email:    params.User.Email,
 		Username: params.User.Username,
-		Password: encryptPw,
+		Token:    token,
 	}
 
 	resData := M{"user": user}
