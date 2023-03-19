@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"mypackage/common"
 	"mypackage/database"
 	"net/http"
 	"os"
@@ -15,6 +16,7 @@ func StartMainServer() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/hello", hello)
+	mux.HandleFunc("/api/user", common.Authenticate(getCurrentUser))
 	mux.HandleFunc("/api/users", userRegistration)
 	mux.HandleFunc("/api/users/login", login)
 

@@ -67,7 +67,8 @@ func Authenticate(next http.HandlerFunc) http.HandlerFunc {
 		}
 
 		ctx := r.Context()
-		ctx = models.ContextWithUser(ctx, &user)
+		ctx = models.SetContextUser(ctx, &user)
+		ctx = models.SetContextUserToken(ctx, token)
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	}

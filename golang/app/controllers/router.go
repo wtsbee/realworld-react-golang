@@ -21,6 +21,43 @@ func hello(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, "Hello-2\n")
 }
 
+func getCurrentUser(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	user, err := models.GetUserFromContext(ctx)
+	if err != nil {
+		log.Println(err)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("{\"message\": \"ユーザー情報が取得できませんでした。\"}"))
+		return
+	}
+
+	token, err := models.GetUserTokenFromContext(ctx)
+	if err != nil {
+		log.Println(err)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("{\"message\": \"トークン情報が取得できませんでした。\"}"))
+		return
+	}
+
+	u := models.User{
+		Email:    user.Email,
+		Username: user.Username,
+		Token:    token,
+	}
+
+	resData := M{"user": u}
+	jsonBytes, _ := json.Marshal(resData)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, err = w.Write(jsonBytes)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
 func userRegistration(w http.ResponseWriter, r *http.Request) {
 	type Input struct {
 		User struct {
