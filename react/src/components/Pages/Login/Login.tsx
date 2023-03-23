@@ -1,6 +1,9 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
+import { startLoginIn } from "../../../redux/loginSlice";
+import { RootState } from "../../../redux/store";
 
 function Login() {
   const [input, setInput] = useState({ email: "", password: "" });
@@ -11,6 +14,9 @@ function Login() {
   };
 
   const navigate = useNavigate();
+
+  const loginIn = useSelector((state: RootState) => state.login.loginIn);
+  const dispatch = useDispatch();
 
   const onSignIn = async () => {
     const params = {
@@ -26,12 +32,19 @@ function Login() {
         data: params,
       });
       localStorage.setItem("jwt", res.data.user.token);
+      dispatch(startLoginIn());
       navigate("/");
       console.log(res.data);
     } catch (e) {
       alert(e);
     }
   };
+
+  useEffect(() => {
+    if (loginIn) {
+      navigate("/");
+    }
+  }, []);
 
   return (
     <div className="auth-page">

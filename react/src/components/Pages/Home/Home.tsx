@@ -1,4 +1,19 @@
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router";
+import { RootState } from "../../../redux/store";
+
 function Home() {
+  const loginIn = useSelector((state: RootState) => state.login.loginIn);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loginIn) {
+      navigate("/login");
+    }
+  }, []);
+
   return (
     <div className="home-page">
       <div className="banner">

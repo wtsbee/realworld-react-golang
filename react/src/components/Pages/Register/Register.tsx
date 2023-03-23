@@ -1,6 +1,8 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { RootState } from "../../../redux/store";
 
 function Register() {
   const [input, setInput] = useState({ username: "", email: "", password: "" });
@@ -11,6 +13,8 @@ function Register() {
   };
 
   const navigate = useNavigate();
+
+  const loginIn = useSelector((state: RootState) => state.login.loginIn);
 
   const onSignUp = async () => {
     const params = {
@@ -33,6 +37,12 @@ function Register() {
       alert(e);
     }
   };
+
+  useEffect(() => {
+    if (loginIn) {
+      navigate("/");
+    }
+  }, []);
 
   return (
     <div className="auth-page">

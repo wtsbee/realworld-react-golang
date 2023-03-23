@@ -1,4 +1,16 @@
+import { useNavigate } from "react-router";
+
 function Header() {
+  const navigate = useNavigate();
+
+  const signInClick = () => {
+    navigate("/login");
+  };
+
+  const signUpClick = () => {
+    navigate("/register");
+  };
+
   return (
     <nav className="navbar navbar-light">
       <div className="container">
@@ -24,12 +36,12 @@ function Header() {
             </a>
           </li>
           <li className="nav-item">
-            <a className="nav-link" href="">
+            <a className="nav-link" onClick={signInClick}>
               Sign in
             </a>
           </li>
           <li className="nav-item">
-            <a className="nav-link" href="">
+            <a className="nav-link" onClick={signUpClick}>
               Sign up
             </a>
           </li>
