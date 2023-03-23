@@ -4,6 +4,7 @@ import Header from "./components/Header/Header";
 import Home from "./components/Pages/Home/Home";
 import Login from "./components/Pages/Login/Login";
 import NewArticle from "./components/Pages/NewArticle/NewArticle";
+import Profile from "./components/Pages/Profile/Profile";
 import Register from "./components/Pages/Register/Register";
 import Settings from "./components/Pages/Settings/Settings";
 
@@ -17,6 +18,7 @@ function App() {
         <Route path="/settings" element={<Settings />} />
         <Route path="/editor" element={<NewArticle />} />
         <Route path="/" element={<Home />} />
+        <Route path="/:username" element={<Profile></Profile>}></Route>
       </Routes>
       <Footer />
     </div>
