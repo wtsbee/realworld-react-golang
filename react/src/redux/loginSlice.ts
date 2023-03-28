@@ -2,16 +2,16 @@ import { createSlice } from "@reduxjs/toolkit";
 
 export interface LoginState {
   user: {
+    username: string;
     email: string;
-    password: string;
   };
   loginIn: boolean;
 }
 
 const initialState: LoginState = {
   user: {
+    username: "",
     email: "",
-    password: "",
   },
   loginIn: false,
 };
@@ -20,8 +20,15 @@ export const slice = createSlice({
   name: "login",
   initialState,
   reducers: {
-    startLoginIn: (state) => {
+    startLoginIn: (state, { payload }) => {
+      const {
+        user: { username, email },
+      } = payload;
       state.loginIn = true;
+      state.user = {
+        username,
+        email,
+      };
     },
   },
 });

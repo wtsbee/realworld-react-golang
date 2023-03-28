@@ -18,7 +18,10 @@ function Login() {
   const loginIn = useSelector((state: RootState) => state.login.loginIn);
   const dispatch = useDispatch();
 
-  const onSignIn = async () => {
+  const onSignIn = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.preventDefault();
     const params = {
       user: {
         email: input.email,
@@ -32,7 +35,7 @@ function Login() {
         data: params,
       });
       localStorage.setItem("jwt", res.data.user.token);
-      dispatch(startLoginIn());
+      dispatch(startLoginIn(res.data));
       navigate("/");
       console.log(res.data);
     } catch (e) {
@@ -51,8 +54,8 @@ function Login() {
       <div className="container page">
         <div className="row">
           <div className="col-md-6 offset-md-3 col-xs-12">
-            <h1 className="text-xs-center">Sign in</h1>
-            <p className="text-xs-center">
+            <h1 className="text-xs-center text-4.5xl my-2">Sign in</h1>
+            <p className="text-xs-center my-4 text-green-10">
               <a href="">Need an account?</a>
             </p>
 
@@ -78,8 +81,8 @@ function Login() {
                 />
               </fieldset>
               <button
-                type="button"
-                className="btn btn-lg btn-primary pull-xs-right"
+                type="submit"
+                className="btn btn-lg btn-primary pull-xs-right bg-green-10"
                 onClick={onSignIn}
               >
                 Sign in
