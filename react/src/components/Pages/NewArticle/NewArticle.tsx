@@ -36,7 +36,7 @@ function NewArticle() {
                   <div className="tag-list"></div>
                 </fieldset>
                 <button
-                  className="btn btn-lg pull-xs-right btn-primary"
+                  className="btn btn-lg pull-xs-right btn-primary bg-green-10"
                   type="button"
                 >
                   Publish Article
