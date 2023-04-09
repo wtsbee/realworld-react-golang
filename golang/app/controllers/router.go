@@ -21,6 +21,20 @@ func hello(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, "Hello-2\n")
 }
 
+func createNewArticle(w http.ResponseWriter, r *http.Request) {
+	resData := M{
+		"message": "リクエストが成功しました",
+	}
+	jsonBytes, _ := json.Marshal(resData)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, err := w.Write(jsonBytes)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
 func getCurrentUser(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	user, err := models.GetUserFromContext(ctx)
@@ -92,7 +106,11 @@ func userRegistration(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u := models.User{Email: params.User.Email, Username: params.User.Username, Password: encryptPw}
+	u := models.User{
+		Email:    params.User.Email,
+		Username: params.User.Username,
+		Password: encryptPw,
+	}
 	db := database.DbConnect()
 	result := db.Create(&u)
 	if result.Error != nil {

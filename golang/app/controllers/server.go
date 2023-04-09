@@ -19,6 +19,7 @@ func StartMainServer() {
 	mux.HandleFunc("/api/user", common.Authenticate(getCurrentUser))
 	mux.HandleFunc("/api/users", userRegistration)
 	mux.HandleFunc("/api/users/login", login)
+	mux.HandleFunc("/api/articles", common.Authenticate(createNewArticle))
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{os.Getenv("FRONTEND_URL")},

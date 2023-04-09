@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useState } from "react";
 import { ArticleForEditor } from "../../../types/article";
 
@@ -19,7 +20,9 @@ function NewArticle() {
     setInput({ ...input, [name]: value });
   };
 
-  const onSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const onSubmit = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     const params = {
       article: {
         title: input.title,
@@ -29,6 +32,13 @@ function NewArticle() {
       },
     };
     console.log("params:", params);
+    const token = localStorage.getItem("jwt");
+    axios.defaults.headers.Authorization = `Token ${token}`;
+    const res = await axios({
+      method: "post",
+      url: `${import.meta.env.VITE_BACKEND_URL}/api/articles`,
+      data: params,
+    });
   };
 
   const addTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
