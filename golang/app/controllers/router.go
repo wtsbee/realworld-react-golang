@@ -22,6 +22,45 @@ func hello(w http.ResponseWriter, r *http.Request) {
 }
 
 func createNewArticle(w http.ResponseWriter, r *http.Request) {
+	type Input struct {
+		Article struct {
+			Title       string   `json:"title" validate:"required"`
+			Description string   `json:"description"`
+			Body        string   `json:"body" validate:"required"`
+			Tags        []string `json:"tagList"`
+		} `json:"article"`
+	}
+
+	params := Input{}
+
+	json.NewDecoder(r.Body).Decode(&params)
+
+	validate := validator.New()
+	if err := validate.Struct(params.Article); err != nil {
+		log.Println(err)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("{\"message\": \"バリデーションエラーが発生しました。\"}"))
+		return
+	}
+
+	article := models.Article{
+		Title:       params.Article.Title,
+		Description: params.Article.Description,
+		Body:        params.Article.Body,
+	}
+
+	article.AddTags(params.Article.Tags...)
+	db := database.DbConnect()
+	result := db.Create(&article)
+	if result.Error != nil {
+		log.Println(result.Error)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("{\"message\": \"データの登録に失敗しました。\"}"))
+		return
+	}
+
 	resData := M{
 		"message": "リクエストが成功しました",
 	}
